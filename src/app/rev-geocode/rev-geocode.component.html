@@ -1,0 +1,426 @@
+<!-- invisible div that controls the idle timeout for this app -->
+<div id="overall" (mousemove)="idleTimeout($event)">
+ 
+<!-- Navigation section, currently thin blue bar running across the top of our wrapper section  -->
+<div class="subNav">
+
+</div> 
+<!-- Main wrapper, white background -->
+<div class="wrapper">
+  <!-- Angular material card wrapper serving as main background for app -->
+<mat-card id="contentWrap">
+  <!-- Angular material card wrapper around the map and undermap area, white -->
+     <mat-card class="mapWrap">
+        <!-- Invisible container for angular material sliding drawer, set backdrop opacity to darken  -->
+      <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <!-- Mat drawer that slides out from map left hand side when view filters button is pressed -->
+          <mat-drawer #drawer [mode]="over"><h2 style="text-align: center;">Map Filters</h2>
+            <p style="text-align: center; padding: 1%; margin: 1%">Enter your selection below to hide or show various map features.</p>
+            <!-- button group representing the Show/Hide Claims Button, Show/Hide Adjuster Button, and Hide Radius Button -->
+              <div class="btn-group"  id="filterGroup">
+                  <button mat-raised-button  id="filterClaimsButton" (click)="onHideClaims(cwDataArray)">{{showOrHideClaimsString}}</button>
+                  <button mat-raised-button  id="filterClaimsRadiusButton" (click)="showOrHideClaimRadius()">{{showOrHideClaimsRadiusString}}</button>
+                  <button mat-raised-button  id="filterAdjustersButton" (click)="showOrHideAdjusters()">{{showOrHideAdjustersString}}</button>
+                </div>
+
+              <!-- The radius options section -->
+              <mat-accordion>
+                  <mat-expansion-panel class="filterPanel" [expanded]="true">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                    <div>Radius Options</div>
+                      </mat-panel-title>
+                      <mat-panel-description>
+                       
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                
+                    <h5 style="text-align: center;">Show Radius On</h5>
+                    <mat-button-toggle-group #claimOrAdjToggle style="margin: 1%; position: relative; left: 25%;">
+                      <mat-button-toggle value="0" (change)="isClaimOrAdjRadius($event)" [checked]="isClaimChecked">Claims</mat-button-toggle>
+                      <mat-button-toggle value="1" (change)="isClaimOrAdjRadius($event)" [checked]="isAdjChecked" >Adjuster</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    <!-- Slider for Radius -->
+
+                    <div id="sliderLabel">
+                        <h4>{{radiusSliderLabel}}</h4>
+                        <p>Set your Radius selection with the slider below</p>
+                    </div>
+
+                   
+                   
+                    <div id="slideWrap">
+                      <mat-slider #radiusSlider
+                        thumbLabel
+                        [disabled]="autoRadiusOn"
+                        [displayWith]="formatLabel"
+                        tickInterval="0"
+                        (input)="sliderChange($event)"
+                        step="25"
+                        min="-50"
+                        max="125">
+                      </mat-slider>
+                     
+                      <div class="slideToggle">
+                        <mat-slide-toggle  #autoRadiusSlideToggle (change)="isAutoRadius()" [checked]="autoRadiusOn">Auto Radius</mat-slide-toggle>
+                        
+                      </div>
+
+                    </div>
+                    
+                  </mat-expansion-panel>
+                </mat-accordion>
+
+                   
+
+
+          </mat-drawer>
+          <mat-drawer-content>
+      <!-- The map, see ts/agm api for corresponding binding information -->
+            <agm-map #map  [scaleControl]="true" [latitude]="lat" [longitude]="lng" [fitBounds]="true" [fullscreenControl]="true" [styles]="mapStyle" [zoom]="currentZoom" [maxZoom]="zoomMax" [minZoom]="4" (zoomChange)="onMapChange($event)">
+                     
+                  <!-- Claims Markers -->
+                    <!-- implement marker clusters on grouped claims greater than 10 -->
+                  <agm-marker-cluster #cluster imagePath="https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m" 
+                   [minimumClusterSize]="10" [gridSize]="100" zIndex="999999">
+                    <agm-marker #marker *ngFor="let data of (cwDataArray | searchInput:searchInput.value); let i = index; trackBy: trackByFn"    
+                      #marker 
+                      [visible]="hiddenOrSubmitted(data)"             
+                      [animation]="markerAnimation"                  
+                      [latitude]="data.lat" [longitude]="data.lng"
+                      [id]="data.policyNum"
+                      [title]="data.policyNum"             
+                      [agmFitBounds]="true"
+                      [iconUrl] ="
+                            {
+                              url: data.isSelected ? '/mapping/assets/pointSelected.png' : '/mapping/assets/point.png',
+                              scaledSize: {
+                                  width: 25,
+                                  height: 40
+                              }
+                          }"
+                      [markerClickable]="true"
+                      [zIndex]="markerZ"
+                      (markerClick)="markerClicked($event, data, searchInput.value)"
+                      (markerRightClick)="markerRightClick($event)"
+                      (mouseOver)="claimMouseOver($event, data)"
+                      (mouseOut)="claimMouseOut($event,data)">       
+                        
+                  
+                    
+                    </agm-marker>
+                </agm-marker-cluster>
+                 
+                  <!-- Small Mile Circle on MouseOver -->
+                  <agm-circle [latitude]="mouseOverLat" [longitude]="mouseOverLng" 
+                    [radius]="radiusZoomFive"
+                    [visible]="showClaimRadius"
+                    [fillColor]="'red'"
+                    [fillOpacity]=".1"
+                    [circleDraggable]="false"
+                    [clickable]="false"
+                    [editable]="false"
+                    [strokeColor]="'black'"
+                    [strokePosition]="0"
+                    [strokeOpacity]="radiusOpacity"
+                    [strokeWeight]="0">
+                  </agm-circle> 
+                  
+                   <!-- Medium Mile Circle on MouseOver -->
+                  <agm-circle [latitude]="mouseOverLat" [longitude]="mouseOverLng" 
+                    [radius]="radiusZoomTen"
+                    [visible]="showClaimRadius"
+                    [fillColor]="'blue'"
+                    [fillOpacity]=".1"
+                    [circleDraggable]="false"
+                    [clickable]="false"
+                    [editable]="false"
+                    [strokeColor]="'black'"
+                    [strokePosition]="0"
+                    [strokeOpacity]="radiusOpacity"
+                    [strokeWeight]="0">
+                  </agm-circle> 
+
+                  <!-- Large Mile Circle on MouseOver -->
+                  <agm-circle [latitude]="mouseOverLat" [longitude]="mouseOverLng" 
+                    [radius]="radiusZoomFifteen"
+                    [visible]="showClaimRadius"
+                    [fillColor]="'green'"
+                    [fillOpacity]=".1"
+                    [circleDraggable]="false"
+                    [clickable]="false"
+                    [editable]="false"
+                    [strokeColor]="'black'"
+                    [strokePosition]="0"
+                    [strokeOpacity]="radiusOpacity"
+                    [strokeWeight]="0">
+                  </agm-circle>  -->
+                 
+                <!-- Adjuster Markers -->
+                  <agm-marker #marker *ngFor="let data of adjDataArray; let i = index"    
+                  #adjMarker 
+                  [visible]="showAdjusters"           
+                  [animation]="'NULL'"                  
+                  [latitude]="data.lat" [longitude]="data.lng"
+                  [title]="data.name"             
+                  [iconUrl] ="
+                        {
+                          url: !data.isSelected ? '/mapping/assets/man-user.svg' : '/mapping/assets/man-user-selected.svg',
+                          scaledSize: {
+                              width: 25,
+                              height: 30
+                          }
+                      }"
+                  [markerClickable]="true"
+                  [zIndex]="adjZ"
+                  (mouseOver)="claimMouseOver($event, data)"
+                  (mouseOut)="claimMouseOut($event,data)"
+                  (markerClick)="adjClicked(i, data, matOption)"
+                  (markerRightClick)="markerRightClick()">       
+                         
+                  </agm-marker>
+
+      
+            </agm-map>
+           
+     <!-- The are corresponding to the section underneath the map -->
+      <div class="underMapGroup">
+        <!-- Left hand side of undermap group -->
+        <div class="filterButtonGroup">
+            <mat-card class="radiusMatCard">
+                <h5>Radius</h5>
+                <h6>{{radiusSliderLabel}}</h6>
+              </mat-card>
+            <button mat-raised-button class="btn btn-primary" id="filterButton" (click)="openDrawer()">View Filters</button>
+          </div>
+        <!-- Center of undermap group -->
+            <mat-card id="cardData">
+              <h5 style="color: #00254e"><strong>{{finderType}}</strong></h5>
+              <hr style="padding: 0; margin: 0;border-color: #7ea9c5;">
+              <h5 style="color: #2b86c7">{{finderTitle}}</h5>
+              <h6>{{finderAddress1}} {{finderAddress2}}</h6>
+              <h6>{{finderCity}} {{finderState}} {{finderZip}}</h6>
+            </mat-card>
+        <!-- Right hand side of udnermap group -->
+            <button mat-raised-button id="submitAssignments" (click)="submitAssignments(cwDataArray)">Assign Claims</button>
+          
+          </div>            
+          </mat-drawer-content>
+        </mat-drawer-container>
+
+            
+      </mat-card>
+   
+     <!-- Tabs located on right of app -->
+      <mat-tab-group animationDuration="500ms" class="claimAssignments" [(selectedIndex)]="selectedTab" mat-stretch-tabs>
+              <!-- Claims to Assign Tab -->
+              <mat-tab #tab0 label="Claims to Assign" >
+         
+    
+                      <mat-form-field style="padding: 1%; font-size: 14px;">
+                          <mat-label>Choose an Adjuster</mat-label>
+                          <mat-select [(ngModel)]="selectedAdjIndex" #matSelect  name="adjusters"  [multiple]="false" (selectionChange)="changeAdjuster($event.value, $event)">
+                            <mat-option #matOption *ngFor="let adj of adjDataArray; let i = index;" [value]="i">{{adj.name}} [{{adj.claimCount}}]</mat-option>
+                          </mat-select>
+                        </mat-form-field>  
+                        
+                        
+                        <mat-form-field style="padding-left: 2%; font-size: 14px;">
+                            <mat-label>Claim Search</mat-label>
+                          <input matInput #searchInput (keyup)="keydownSearch($event, searchInput.value);"  (contextmenu)="keydownSearch($event, searchInput.value);">
+                        </mat-form-field>  
+                        
+                        <button mat-button style="margin-left: 5%;" (click)="selectAll(cwDataArray, searchInput.value)">{{ selectOrDeselectString }}</button>
+                       
+                                      
+                
+                  <mat-card class="tableWrap" >
+            
+              
+                      <div class="row">
+                        
+                        <mat-selection-list #claimsList [(ngModel)]="filteredClaimList" (ngModelChange)="onSelectedOptionsChange($event)"
+                        class="col-xs-12" >
+                      
+                      
+                            <mat-list-option #checkbox [selected]="cwData.isSelected"  
+                                  *ngFor="let cwData of (cwDataArray | searchInput:searchInput.value); let i = index;"  (click)="claimClicked($event, cwData, searchInput.value);"
+                                    [id]="cwData.policyNum" (keydown.shift)="isCheckedShift()" (keyup.shift)="isCheckedShiftUp()" [value]="cwData" style="margin-bottom: 1.5%;">
+                                <p class="col-md-12" style="font-size: 12px; color:#0021a5;user-select: none; padding-top: 1%; padding-bottom: 1%;"><strong>{{cwData.policyNum}}</strong> | {{cwData.policyType}}<br>
+                              <div style="color: black">{{cwData.Address1}} {{cwData.Address2}},
+                              {{cwData.City}}, {{cwData.State}} {{cwData.Zipcode}}</div>
+                              <hr style="padding: 0; margin: 0;border-color: #7ea9c5;">
+                            </mat-list-option>
+                        
+                          </mat-selection-list>
+                      
+                    
+                    </div>
+                
+                  </mat-card>
+           
+
+              </mat-tab>
+            
+              <mat-tab #tab1 label="Claim Filters">
+                <mat-card>
+                  <label id="example-radio-group-label">Filter by Policy Type</label>
+                  <mat-radio-group 
+                    aria-labelledby="example-radio-group-label"
+                    class="example-radio-group"
+                    [(ngModel)]="selectedFilter"
+                    (change)="filterSelect(searchInput.value)">
+                    <mat-radio-button class="example-radio-button" *ngFor="let filter of filters" [value]="filter">
+                      {{filter}}
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </mat-card>
+                  
+            </mat-tab>
+              <mat-tab #tab2 label="Adjuster By Type">
+                           
+                  <mat-accordion multi="false" >
+                      <mat-expansion-panel [expanded]="true" style="margin-top: 2%;">
+                        <mat-expansion-panel-header style="background-color: #003856;">
+                          <mat-panel-title>
+                        <div style="color: white;">Residential</div>
+                          </mat-panel-title>
+                          <mat-panel-description style="color:#729ab3;">
+                           
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                      
+                        <mat-selection-list #resList  style="height: 275px; overflow-y: scroll; overflow-x: hidden; margin-top: 1%; padding-right: 3%;">
+                            <div *ngFor="let data of adjDataArray; let i = index;">
+                             <div *ngFor="let certData of data.certs; let j = index;">
+                                 <mat-list-option *ngIf="certData.certType === 'Residential'"  id="data.name" style="margin: 3%;"  [selected]="data.isSelected" (click)="changeAdjuster(i, j)" [value]="i">
+                                  
+                                 
+                                  <div style="font-size: 14px; color: black;">{{data.name}} [{{data.claimCount}}] 
+                                    <br><div style="display: inline; font-size: 10px;" *ngFor="let skills of data.skills"> | <strong style="color: #3988c1">{{skills.skillType}}</strong> | </div>
+                                    <hr style="padding: 0; margin: 0;border-color: #7ea9c5;"></div>
+                                </mat-list-option>
+                              
+                              </div>
+                            </div> 
+                    
+                       </mat-selection-list>   
+                                      
+                      </mat-expansion-panel>
+            
+
+             
+                      <mat-expansion-panel>
+                          <mat-expansion-panel-header style="background-color: #003856;">
+                          <mat-panel-title>
+                           <div style="color: white;">Manufactured Home & Travel Trailer</div>
+                          </mat-panel-title>
+                          <mat-panel-description style="color:#729ab3;">
+                           
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        <mat-selection-list #MOBList style="height: 275px; overflow-y: scroll; overflow-x: hidden; margin-top: 1%; padding-right: 3%;">
+                            <div *ngFor="let data of adjDataArray; let i = index;">
+                             <div *ngFor="let certData of data.certs; let j = index;">
+                                 <mat-list-option *ngIf="certData.certType === 'Manufactured (Mobile) Home/ Travel Trailer'" style="margin: 3%;" [selected]="data.isSelected" (click)="changeAdjuster(i, j)" [value]="i">
+                                  <div style="font-size: 14px; color: black;">{{data.name}} [{{data.claimCount}}] 
+                                    <br><div style="display: inline; font-size: 10px;" *ngFor="let skills of data.skills"> | <strong style="color: #3988c1">{{skills.skillType}}</strong> | </div>
+                                    <hr style="padding: 0; margin: 0;border-color: #7ea9c5;"></div>
+                                </mat-list-option>
+                              
+                              </div>
+                            </div>
+                    
+                       </mat-selection-list>                     
+                      </mat-expansion-panel>
+          
+
+
+                      <mat-expansion-panel>
+                          <mat-expansion-panel-header style="background-color: #003856;">
+                          <mat-panel-title>
+                              <div style="color: white;">Commercial</div>
+                          </mat-panel-title>
+                          <mat-panel-description style="color:#729ab3;">
+                           
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        <mat-selection-list #comList style="height: 275px; overflow-y: scroll; overflow-x: hidden; margin-top: 1%; padding-right: 3%;">
+                            <div *ngFor="let data of adjDataArray; let i = index;">
+                             <div *ngFor="let certData of data.certs;">
+                                 <mat-list-option *ngIf="certData.certType === 'Commercial'" style="margin: 3%;" [selected]="data.isSelected" (click)="changeAdjuster(i, $event)" [value]="i">
+                                  <div style="font-size: 14px; color: black;">{{data.name}} [{{data.claimCount}}] 
+                                    <br><div style="display: inline; font-size: 10px;" *ngFor="let skills of data.skills"> | <strong style="color: #3988c1">{{skills.skillType}}</strong> | </div>
+                                    <hr style="padding: 0; margin: 0;border-color: #7ea9c5;"></div>
+                                </mat-list-option>
+                              
+                              </div>
+                            </div>
+                    
+                       </mat-selection-list>                     
+                      </mat-expansion-panel>
+           
+
+         
+                      <mat-expansion-panel>
+                          <mat-expansion-panel-header style="background-color: #003856;">
+                          <mat-panel-title>
+                              <div style="color: white;">Large Commercial</div>
+                          </mat-panel-title>
+                          <mat-panel-description style="color:#729ab3;">
+                           
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        <mat-selection-list #largeComList style="height: 275px; overflow-y: scroll; overflow-x: hidden; margin-top: 1%; padding-right: 3%;">
+                            <div *ngFor="let data of adjDataArray; let i = index;">
+                             <div *ngFor="let certData of data.certs;">
+                                 <mat-list-option *ngIf="certData.certType === 'Large Commercial'" style="margin: 3%;" [selected]="data.isSelected" (click)="changeAdjuster(i, $event)" [value]="i">
+                                  <div style="font-size: 14px; color: black;">{{data.name}} [{{data.claimCount}}] 
+                                    <br><div style="display: inline; font-size: 10px;" *ngFor="let skills of data.skills"> | <strong style="color: #3988c1">{{skills.skillType}}</strong> | </div>
+                                    <hr style="padding: 0; margin: 0;border-color: #7ea9c5;"></div>
+                                </mat-list-option>
+                              
+                              </div>
+                            </div>
+                    
+                       </mat-selection-list>                     
+                      </mat-expansion-panel>
+              
+    
+            <mat-expansion-panel>
+                    <mat-expansion-panel-header style="background-color: #003856;">
+                        <mat-panel-title>
+                            <div style="color: white;">RCBAP</div>
+                        </mat-panel-title>
+                        <mat-panel-description style="color:#729ab3;">
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                        
+                    <mat-selection-list #rcbapList style="height: 275px; overflow-y: scroll; overflow-x: hidden; margin-top: 1%; padding-right: 3%;">
+                      <div *ngFor="let data of adjDataArray; let i = index;">
+                        <div *ngFor="let certData of data.certs;">
+                          <mat-list-option *ngIf="certData.certType === 'RCBAP'" style="margin: 3%;" [selected]="data.isSelected" (click)="changeAdjuster(i, $event)" [value]="i">
+                            <div style="font-size: 14px; color: black;">{{data.name}} [{{data.claimCount}}] 
+                            <br><div style="display: inline; font-size: 10px;" *ngFor="let skills of data.skills"> | <strong style="color: #3988c1">{{skills.skillType}}</strong> | </div>
+                            <hr style="padding: 0; margin: 0;border-color: #7ea9c5;"></div>
+                          </mat-list-option>
+                        </div>
+                      </div>
+                    </mat-selection-list>                     
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>
+
+
+
+
+
+
+

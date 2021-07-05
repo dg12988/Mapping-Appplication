@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+.mat-expansion-panel-header-description,
+.mat-expansion-indicator::after {
+  color: white !important;
+}
+*::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+*::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #7fabc7;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #236188;
+}
+.mat-slider {
+  z-index: 4999 !important;
+}
+.mat-slider.mat-slider-horizontal .mat-slider-wrapper {
+  top: 18px;
+}
+.mat-slider.mat-slider-horizontal .mat-slider-track-wrapper {
+  height: 25px;
+}
+.mat-slider.mat-slider-horizontal .mat-slider-track-background,
+.mat-slider.mat-slider-horizontal .mat-slider-track-fill {
+  height: 100%;
+}
+.mat-slider.mat-slider-horizontal .mat-slider-track-fill {
+  background-color: #236188;
+}
+.mat-slider-thumb {
+  background-color: #7fabc7;
+}
+
+.mat-accent .mat-slider-thumb {
+  height: 50px;
+  width: 50px;
+  background-color: #7fabc7 !important;
+
+  bottom: -36px;
+  right: -20px;
+
+  border-radius: 0px;
+}
+
+.mat-slider .mat-slider-thumb-label {
+  width: 75px;
+  height: 75px;
+  text-align: center;
+
+  background-color: #7fabc7 !important;
+}
+
+body {
+  background-color: #e6e7e9;
+}

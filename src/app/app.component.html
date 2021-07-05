@@ -1,0 +1,57 @@
+<div class="main_wrapper">
+  <div class="headWrap">
+    <h4 id="main_login">
+      <button
+        mat-raised-button
+        id="doneButton"
+        class="btn btn-success"
+        (click)="onDone()"
+      >
+        Done
+      </button>
+    </h4>
+    <h4 id="main_login">
+      <button
+        mat-raised-button
+        id="feedbackButton"
+        class="btn btn-danger"
+        (click)="feedbackDialog()"
+      >
+        Feedback
+      </button>
+    </h4>
+
+    <h4 id="main_banner">
+      <a href="https://localhost:4200/"
+        ><img
+          id="cwLogo"
+          src="/mapping/assets/Claimwire_Logo.png"
+          alt="ClaimswireMaps"
+      /></a>
+    </h4>
+    <h4 class="main_tag">
+      <strong>Professionals Portal </strong>BETA | Manager
+    </h4>
+  </div>
+
+  <div class="mainBody">
+    <app-rev-geocode></app-rev-geocode>
+  </div>
+  <div class="copyrightWrapper">
+    <div style="float: left">
+      <p>
+        Copyright © 2009 -
+        {{ year }}
+        · Simultaneous Solutions, Inc. All Rights Reserved
+      </p>
+    </div>
+
+    <div style="float: right">
+      <a class="TOS" href="https://web.simsol.com/terms-and-conditions/"
+        >Terms of Service </a
+      >|<a class="TOS" href="https://web.simsol.com/privacy-policy/">
+        Privacy Policy</a
+      >
+    </div>
+  </div>
+</div>
