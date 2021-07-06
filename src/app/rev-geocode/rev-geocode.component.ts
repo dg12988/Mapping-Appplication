@@ -332,7 +332,7 @@ export class RevGeocodeComponent implements OnInit {
   private rightClickCount = 0;
 
 
-  
+//   Models for Assignments and Adjusters
   private cardData: ClaimAssignment = {
     "assignmentId": 0,
     "externalAssignmentId": "Claim Number",
@@ -368,7 +368,7 @@ export class RevGeocodeComponent implements OnInit {
   };    
 
 
-
+// ViewChild Declaration
   @ViewChild ('map') map: AgmMap; 
   @ViewChild ('matOption') matOption: MatOption; 
   @ViewChild ('matSelect') matSelect: MatSelect; 
@@ -387,6 +387,7 @@ export class RevGeocodeComponent implements OnInit {
   @ViewChildren ('checkbox') checkbox;
   @ViewChildren ('marker') marker;
 
+//   Sets width and height of window
   screenHeight: number;
   screenWidth: number;
   
