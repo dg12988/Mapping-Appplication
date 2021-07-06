@@ -1,3 +1,11 @@
+Enterprise Software used by Claims Managers to assign claims to Insurance Adjusters via multiple methods, including a Google Map. In the process of development and deployement for this project, I served as Project Manager, as well as the sole Front End Developer. 
+
+The skills utilized for this project are, but not limited to: Angular 7, Angular Google Maps API, Angular Material, Typescript, HTML, CSS and The Marker-Clusterer Library.
+
+
+#Angular Stuff
+
+
 To run this project you must first install the following: 
 1. node.js: https://nodejs.org/en/
 2. Angular CLI: https://cli.angular.io/
@@ -24,7 +32,7 @@ Go to your browser and enter http://localhost:4200/
 
 ////// ANGULAR //////
 
-# Maptest
+# Mapping
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
 
