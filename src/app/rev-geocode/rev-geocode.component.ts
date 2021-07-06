@@ -17,12 +17,12 @@ import { HostListener } from "@angular/core";
 
 
 // CONSTANTS
-const API_KEY: string = 'AIzaSyBabvM40H3sWl7mJzeaSDjzTPRNI_kPNtc';
-const CW_URL: string = 'https://claimswire-dev.simsol.com/mapdata/assignments/';
-const CW_PUT_URL: string = 'https://claimswire-dev.simsol.com/mapdata/assignments';
-const ADJ_URL: string = 'https://claimswire-dev.simsol.com/mapdata/adjusters/';
-const GOOGLE_URL: string = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-const ADJ_PUT_URL: string ="https://claimswire-dev.simsol.com/mapdata/geo";
+const API_KEY: string = 'REDACTED';
+const CW_URL: string = 'https://REDACTED.simsol.com/mapdata/assignments/';
+const CW_PUT_URL: string = 'https://REDACTED.simsol.com/mapdata/assignments';
+const ADJ_URL: string = 'https://REDACTED.simsol.com/mapdata/adjusters/';
+const GOOGLE_URL: string = "https://REDACTED.googleapis.com/maps/api/geocode/json?address=";
+const ADJ_PUT_URL: string ="https://REDACTED.simsol.com/mapdata/geo";
 
 @Component({
   selector: 'app-rev-geocode',
