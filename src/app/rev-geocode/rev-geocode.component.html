@@ -40,15 +40,14 @@
                       <mat-button-toggle value="0" (change)="isClaimOrAdjRadius($event)" [checked]="isClaimChecked">Claims</mat-button-toggle>
                       <mat-button-toggle value="1" (change)="isClaimOrAdjRadius($event)" [checked]="isAdjChecked" >Adjuster</mat-button-toggle>
                     </mat-button-toggle-group>
-                    <!-- Slider for Radius -->
+
+                   <!-- Slider for Radius -->
 
                     <div id="sliderLabel">
                         <h4>{{radiusSliderLabel}}</h4>
                         <p>Set your Radius selection with the slider below</p>
                     </div>
-
-                   
-                   
+            
                     <div id="slideWrap">
                       <mat-slider #radiusSlider
                         thumbLabel
@@ -63,19 +62,14 @@
                      
                       <div class="slideToggle">
                         <mat-slide-toggle  #autoRadiusSlideToggle (change)="isAutoRadius()" [checked]="autoRadiusOn">Auto Radius</mat-slide-toggle>
-                        
+                         </div>
                       </div>
-
-                    </div>
                     
                   </mat-expansion-panel>
                 </mat-accordion>
-
-                   
-
-
-          </mat-drawer>
-          <mat-drawer-content>
+              </mat-drawer>
+            <mat-drawer-content>
+             
       <!-- The map, see ts/agm api for corresponding binding information -->
             <agm-map #map  [scaleControl]="true" [latitude]="lat" [longitude]="lng" [fitBounds]="true" [fullscreenControl]="true" [styles]="mapStyle" [zoom]="currentZoom" [maxZoom]="zoomMax" [minZoom]="4" (zoomChange)="onMapChange($event)">
                      
@@ -213,11 +207,10 @@
    
      <!-- Tabs located on right of app -->
       <mat-tab-group animationDuration="500ms" class="claimAssignments" [(selectedIndex)]="selectedTab" mat-stretch-tabs>
-              <!-- Claims to Assign Tab -->
+            
+       <!-- Claims to Assign Tab -->
               <mat-tab #tab0 label="Claims to Assign" >
-         
-    
-                      <mat-form-field style="padding: 1%; font-size: 14px;">
+                        <mat-form-field style="padding: 1%; font-size: 14px;">
                           <mat-label>Choose an Adjuster</mat-label>
                           <mat-select [(ngModel)]="selectedAdjIndex" #matSelect  name="adjusters"  [multiple]="false" (selectionChange)="changeAdjuster($event.value, $event)">
                             <mat-option #matOption *ngFor="let adj of adjDataArray; let i = index;" [value]="i">{{adj.name}} [{{adj.claimCount}}]</mat-option>
@@ -233,16 +226,11 @@
                         <button mat-button style="margin-left: 5%;" (click)="selectAll(cwDataArray, searchInput.value)">{{ selectOrDeselectString }}</button>
                        
                                       
-                
-                  <mat-card class="tableWrap" >
-            
-              
-                      <div class="row">
-                        
-                        <mat-selection-list #claimsList [(ngModel)]="filteredClaimList" (ngModelChange)="onSelectedOptionsChange($event)"
-                        class="col-xs-12" >
-                      
-                      
+                    <mat-card class="tableWrap" >
+                       <div class="row">
+                         <mat-selection-list #claimsList [(ngModel)]="filteredClaimList" (ngModelChange)="onSelectedOptionsChange($event)"
+                          class="col-xs-12" >
+                         
                             <mat-list-option #checkbox [selected]="cwData.isSelected"  
                                   *ngFor="let cwData of (cwDataArray | searchInput:searchInput.value); let i = index;"  (click)="claimClicked($event, cwData, searchInput.value);"
                                     [id]="cwData.policyNum" (keydown.shift)="isCheckedShift()" (keyup.shift)="isCheckedShiftUp()" [value]="cwData" style="margin-bottom: 1.5%;">
@@ -251,17 +239,12 @@
                               {{cwData.City}}, {{cwData.State}} {{cwData.Zipcode}}</div>
                               <hr style="padding: 0; margin: 0;border-color: #7ea9c5;">
                             </mat-list-option>
-                        
-                          </mat-selection-list>
-                      
-                    
-                    </div>
-                
-                  </mat-card>
-           
-
+                           </mat-selection-list>
+                        </div>
+                     </mat-card>
               </mat-tab>
-            
+       
+              <!--      Start of Tab 2        -->
               <mat-tab #tab1 label="Claim Filters">
                 <mat-card>
                   <label id="example-radio-group-label">Filter by Policy Type</label>
@@ -275,18 +258,17 @@
                     </mat-radio-button>
                   </mat-radio-group>
                 </mat-card>
-                  
-            </mat-tab>
-              <mat-tab #tab2 label="Adjuster By Type">
-                           
-                  <mat-accordion multi="false" >
+           </mat-tab>
+       
+           <!--        Start of Tab 3        -->
+           <mat-tab #tab2 label="Adjuster By Type">
+                 <mat-accordion multi="false" >
                       <mat-expansion-panel [expanded]="true" style="margin-top: 2%;">
                         <mat-expansion-panel-header style="background-color: #003856;">
                           <mat-panel-title>
                         <div style="color: white;">Residential</div>
                           </mat-panel-title>
                           <mat-panel-description style="color:#729ab3;">
-                           
                           </mat-panel-description>
                         </mat-expansion-panel-header>
                       
@@ -309,7 +291,7 @@
                       </mat-expansion-panel>
             
 
-             
+                      <!--       Start of Adjuster Selection and expansion panel        -->
                       <mat-expansion-panel>
                           <mat-expansion-panel-header style="background-color: #003856;">
                           <mat-panel-title>
